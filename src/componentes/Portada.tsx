@@ -192,7 +192,6 @@ export function Portada() {
                 boxShadow: "0 20px 40px rgba(0,0,0,0.2)"
               }}
             >
-              <p className="text-xs sm:text-sm text-slate-600">Experiencia en</p>
               <p className="text-lg sm:text-2xl bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">Desarrollo Full Stack</p>
             </motion.div>
           </motion.div>

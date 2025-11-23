@@ -13,11 +13,28 @@ export function Contacto() {
     subject: "",
     message: ""
   });
-  
+
   const [copied, setCopied] = useState(false);
+
+  // Valida si todos los campos están completos y son válidos
+  const isFormValid = () => {
+    // Expresión regular para nombre: solo letras y espacios, mínimo 2 caracteres
+    const nameRegex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]{2,}$/;
+    // Expresión regular para email: formato estándar de email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    return (
+      nameRegex.test(formData.name) &&
+      emailRegex.test(formData.email) &&
+      formData.subject.trim() !== "" &&
+      formData.message.trim() !== ""
+    );
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!isFormValid()) return; // No hace nada si el formulario no es válido
+
     const message = `Hola Matías! Te contacto desde tu portafolio.\n\n📋 *Datos de contacto:*\n👤 Nombre: ${formData.name}\n📧 Email: ${formData.email}\n📌 Asunto: ${formData.subject}\n\n💬 *Mensaje:*\n${formData.message}`;
     const phoneNumber = "5493512937346";
     const whatsappUrl = `https://api.whatsapp.com/send?phone=${phoneNumber}&text=${encodeURIComponent(message)}`;
@@ -26,6 +43,8 @@ export function Contacto() {
   };
 
   const handleCopyMessage = () => {
+    if (!isFormValid()) return; // No copia si no es válido
+
     const message = `Hola Matías! Te contacto desde tu portafolio.\n\n📋 Datos de contacto:\n👤 Nombre: ${formData.name}\n📧 Email: ${formData.email}\n📌 Asunto: ${formData.subject}\n\n💬 Mensaje:\n${formData.message}`;
     const textarea = document.createElement('textarea');
     textarea.value = message;
@@ -45,6 +64,8 @@ export function Contacto() {
   };
 
   const handleEmailSend = () => {
+    if (!isFormValid()) return; // No envía si no es válido
+
     const subject = encodeURIComponent(`Contacto desde portafolio: ${formData.subject}`);
     const body = encodeURIComponent(`Hola Matías,\n\nNombre: ${formData.name}\nEmail: ${formData.email}\nAsunto: ${formData.subject}\n\nMensaje:\n${formData.message}`);
     window.location.href = `mailto:exequielarias932@gmail.com?subject=${subject}&body=${body}`;
@@ -52,7 +73,16 @@ export function Contacto() {
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+    const { name, value } = e.target;
+
+    // Si es el campo de nombre, validamos que no tenga números ni caracteres especiales
+    if (name === "name") {
+      // Permitimos solo letras, espacios y caracteres acentuados
+      const cleanValue = value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, "");
+      setFormData(prev => ({ ...prev, [name]: cleanValue }));
+    } else {
+      setFormData(prev => ({ ...prev, [name]: value }));
+    }
   };
 
   const handleCopy = () => {
@@ -132,25 +162,97 @@ export function Contacto() {
                   <div className="grid md:grid-cols-2 gap-5 sm:gap-6">
                     <div className="space-y-2">
                       <label htmlFor="name" className="text-xs sm:text-sm text-slate-600">Nombre completo</label>
-                      <Input id="name" name="name" placeholder="Tu nombre" value={formData.name} onChange={handleChange} required className="h-10 sm:h-11" />
+                      <Input
+                        id="name"
+                        name="name"
+                        placeholder="Tu nombre"
+                        value={formData.name}
+                        onChange={handleChange}
+                        required
+                        className="h-10 sm:h-11"
+                      // Opcional: Mostrar mensaje de error si el campo es inválido
+                      // title="Solo se permiten letras y espacios"
+                      />
                     </div>
                     <div className="space-y-2">
                       <label htmlFor="email" className="text-xs sm:text-sm text-slate-600">Email</label>
-                      <Input id="email" name="email" type="email" placeholder="tu@email.com" value={formData.email} onChange={handleChange} required className="h-10 sm:h-11" />
+                      <Input
+                        id="email"
+                        name="email"
+                        type="email"
+                        placeholder="tu@email.com"
+                        value={formData.email}
+                        onChange={handleChange}
+                        required
+                        className="h-10 sm:h-11"
+                      // Opcional: Mostrar mensaje de error si el campo es inválido
+                      // title="Ingresa un email válido"
+                      />
                     </div>
                   </div>
                   <div className="space-y-2">
                     <label htmlFor="subject" className="text-xs sm:text-sm text-slate-600">Asunto</label>
-                    <Input id="subject" name="subject" placeholder="¿En qué puedo ayudarte?" value={formData.subject} onChange={handleChange} required className="h-10 sm:h-11" />
+                    <Input
+                      id="subject"
+                      name="subject"
+                      placeholder="¿En qué puedo ayudarte?"
+                      value={formData.subject}
+                      onChange={handleChange}
+                      required
+                      className="h-10 sm:h-11"
+                    />
                   </div>
                   <div className="space-y-2">
                     <label htmlFor="message" className="text-xs sm:text-sm text-slate-600">Mensaje</label>
-                    <Textarea id="message" name="message" placeholder="Cuéntame sobre tu proyecto..." rows={6} value={formData.message} onChange={handleChange} required className="text-sm" />
+                    <Textarea
+                      id="message"
+                      name="message"
+                      placeholder="Cuéntame sobre tu proyecto..."
+                      rows={6}
+                      value={formData.message}
+                      onChange={handleChange}
+                      required
+                      className="text-sm"
+                    />
                   </div>
-                  <Button type="submit" size="lg" className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700">Enviar mensaje<Send className="ml-2 h-4 w-4" /></Button>
+                  <Button
+                    type="submit"
+                    size="lg"
+                    className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700"
+                    disabled={!isFormValid()} // Deshabilita el botón si no es válido
+                  >
+                    Enviar mensaje
+                    <Send className="ml-2 h-4 w-4" />
+                  </Button>
                   <div className="flex flex-col sm:flex-row gap-3">
-                    <Button type="button" variant="outline" size="lg" onClick={handleEmailSend} className="flex-1 text-sm"><Mail className="mr-2 h-4 w-4" />Enviar por Email</Button>
-                    <Button type="button" variant="outline" size="lg" onClick={handleCopyMessage} className="flex-1 text-sm">{copied ? (<> <Check className="mr-2 h-4 w-4" /> ¡Copiado!</>) : (<> <Copy className="mr-2 h-4 w-4" /> Copiar mensaje</>)}</Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="lg"
+                      onClick={handleEmailSend}
+                      className="flex-1 text-sm"
+                      disabled={!isFormValid()} // Deshabilita el botón si no es válido
+                    >
+                      <Mail className="mr-2 h-4 w-4" />Enviar por Email
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="lg"
+                      onClick={handleCopyMessage}
+                      className="flex-1 text-sm"
+                      disabled={!isFormValid()} // Deshabilita el botón si no es válido
+                    >
+                      {copied ? (
+                        <>
+                          <Check className="mr-2 h-4 w-4" /> ¡Copiado!
+                        </>
+                      ) : (
+                        <>
+                          <Copy className="mr-2 h-4 w-4" /> Copiar mensaje
+                        </>
+                      )}
+                    </Button>
                   </div>
                 </form>
               </CardContent>
