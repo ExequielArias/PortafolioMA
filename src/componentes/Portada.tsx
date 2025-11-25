@@ -167,15 +167,20 @@ export function Portada() {
               <div className="w-full h-full bg-gradient-to-br from-blue-200 to-cyan-200 flex items-center justify-center">
                 <div className="text-center space-y-3 sm:space-y-4 p-6 sm:p-8">
                   <motion.div
-                    className="w-24 h-24 sm:w-32 sm:h-32 mx-auto rounded-full bg-gradient-to-br from-blue-600 to-cyan-600 flex items-center justify-center text-white text-3xl sm:text-4xl"
+                    className="w-24 h-24 sm:w-32 sm:h-32 mx-auto rounded-full overflow-hidden shadow-lg"
                     whileHover={{
                       rotate: 360,
                       scale: 1.1
                     }}
                     transition={{ duration: 0.6 }}
                   >
-                    MA
+                    <img
+                      src="/logo-ma.png"
+                      alt="Logo MA"
+                      className="w-full h-full object-cover"
+                    />
                   </motion.div>
+
                   <p className="text-slate-700 text-sm sm:text-base">Matías Exequiel Arias Carrasco</p>
                 </div>
               </div>
